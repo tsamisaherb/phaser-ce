@@ -22,10 +22,14 @@ var Main = function(game){
 	    me.tileColors = [
 	        '#ffffff'
 	    ];
-	 
+	 	
+	    me.wordsForGame = [
+	    	"bench", "three", "over", "reason", "marked"
+	    ];
+
 	    //Set the width and height for the tiles
-	    me.tileWidth = 100;
-	    me.tileHeight = 100;
+	    me.tileWidth = 150;
+	    me.tileHeight = 150;
 	 
 	    //This will hold all of the tile sprites
 	    me.tiles = me.game.add.group();
@@ -82,11 +86,11 @@ var Main = function(game){
 		me.remainingTime = 6000;
 		me.fullTime = 6000;
 
-		me.createTimer();
+		//me.createTimer();
  
-		me.gameTimer = game.time.events.loop(100, function(){
-		    me.updateTimer();
-		});
+		// me.gameTimer = game.time.events.loop(100, function(){
+		//     me.updateTimer();
+		// });
 	},
 
 	createTimer: function(){
@@ -137,6 +141,16 @@ var Main = function(game){
 	 
 	},
 
+	initWordGrid: function()
+	{
+		//chose the first word
+		var i =0;
+		while(i < wordsForGame.length){
+		var word = wordsForGame[i];
+		//direction = math.integerInRange
+		}
+	}
+
 	addTile: function(x, y){
 	 
 	    var me = this;
@@ -185,7 +199,6 @@ var Main = function(game){
 	 
 	},
 
-
 	incrementScore: function(){
  
     var me = this;
@@ -225,7 +238,8 @@ var Main = function(game){
  
             //Grab the tile being hovered over
             var hoverTile = me.tileGrid[hoverPosX][hoverPosY];
- 
+            console.log("X" + hoverPosX);
+            console.log("Y" + hoverPosY);
             //Figure out the bounds of the tile
             var tileLeftPosition = me.leftBuffer + (hoverPosX * me.tileWidth);
             var tileRightPosition = me.leftBuffer + (hoverPosX * me.tileWidth) + me.tileWidth;
@@ -236,7 +250,7 @@ var Main = function(game){
             //if the player is hovering near the center of the tile
             if(!hoverTile.isActive && hoverX > tileLeftPosition + me.selectBuffer && hoverX < tileRightPosition - me.selectBuffer 
                 && hoverY > tileTopPosition + me.selectBuffer && hoverY < tileBottomPosition - me.selectBuffer){
- 
+ 				
                 //Set the tile to be active
                 hoverTile.isActive = true;
  
@@ -279,7 +293,7 @@ var Main = function(game){
  
             } 
             else {
-                console.log("incorrect!");
+                //console.log("incorrect!");
             }
  
             //Reset the current word
