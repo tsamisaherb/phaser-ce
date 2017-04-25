@@ -37,12 +37,16 @@ var Main = function(game){
 	    //Initialise tile grid, this array will hold the positions of the tiles
 	    //Create whatever shape you'd like
 	    me.tileGrid = [
-	        [null, null, null, null, null, null],
-	        [null, null, null, null, null, null],
-	        [null, null, null, null, null, null],
-	        [null, null, null, null, null, null],
-	        [null, null, null, null, null, null],
-	        [null, null, null, null, null, null]
+	        [null, null, null, null, null, null, null, null],
+	        [null, null, null, null, null, null, null, null],
+	        [null, null, null, null, null, null, null, null],
+	        [null, null, null, null, null, null, null, null],
+	        [null, null, null, null, null, null, null, null],
+	        [null, null, null, null, null, null, null, null],
+	       	[null, null, null, null, null, null, null, null],
+	        [null, null, null, null, null, null, null, null],
+	       	[null, null, null, null, null, null, null, null],
+	        [null, null, null, null, null, null, null, null]
 	    ];
 	 
 	    //Keep a reference to the total grid width and height
@@ -59,8 +63,8 @@ var Main = function(game){
 	    me.random = new Phaser.RandomDataGenerator([seed]);
 	 
 	    //Set up some initial tiles and the score label
-	    me.initTiles();
-
+	    //me.initTiles();
+	    me.initWordGrid();
 	    me.guessing = false;
 		me.currentWord = [];
 		me.correctWords = [];
@@ -144,12 +148,116 @@ var Main = function(game){
 	initWordGrid: function()
 	{
 		//chose the first word
+		var me = this;
 		var i =0;
-		while(i < wordsForGame.length){
-		var word = wordsForGame[i];
-		//direction = math.integerInRange
+		var counter = 0;
+		while(i < me.wordsForGame.length && counter<2500)
+		{
+			var word = me.wordsForGame[i];
+			var success=false;
+			while(!success && counter < 2500)
+			{
+				//0 = down, 1 = diagonal, 2= right
+				var direction = me.random.integerInRange(0,2);
+				//choose starting location randomly. see if any tiles conflict
+				//if you arent going down then start far enough left to fit the word
+				if(direction!=0)
+				{
+					var startX = me.random.integerInRange(0,(me.tileGrid[0].length-word.length));
+				}
+				//else start anywhere
+				else
+				{
+					var startX = me.random.integerInRange(0, me.tileGrid[0].length);
+				}
+				//if you arent right start far enough up to fit the word
+				if(direction!=2)
+				{
+					var startY = me.random.integerInRange(0,(me.tileGrid.length-word.length));
+				}
+				//else start anywhere
+				else
+				{
+					var startY = me.random.integerInRange(0, me.tileGrid.length);
+				}
+				//now fill grid in direction
+				var thisWordHasConflict=false;
+				for(var w = 0; w<word.length; w++)
+				{
+					var posX = startX;
+					var posY = startY;
+					if(direction==0)
+					{
+						posX = startX;
+						posY = startY+w;
+					}
+					if(direction==1)
+					{
+						posX = startX+w;
+						posY = startY+w;
+					}
+					if(direction==2)
+					{
+						posX=startX+w;
+						posY=startY+w;
+					}
+					if(me.hasConflict(word[w],posX,posY))
+					{
+						thisWordHasConflict=true;
+					}
+				}
+				if(!thisWordHasConflict)
+				{
+					success=true;
+					i++;
+					//add word to tile grid
+				}
+				else
+				{
+					counter++;
+				}
+			}
+
 		}
-	}
+	},
+
+	addWordToTileGrid: function(word, direction, x, y)
+	{
+		console.log("ADDING WORD: " + word);
+		var me = this;
+		for(var w = 0; w<word.length; w++)
+		{
+			var posX = startX;
+			var posY = startY;
+			if(direction==0)
+			{
+				posX = startX;
+				posY = startY+w;
+			}
+			if(direction==1)
+			{
+				posX = startX+w;
+				posY = startY+w;
+			}
+			if(direction==2)
+			{
+				posX=startX+w;
+				posY=startY+w;
+			}
+			me.tileGrid[x,y] = word[w];
+		}
+	},
+
+	hasConflict: function(letter, x, y)
+	{
+		var me = this;
+		if(me.tileGrid[x,y]!=null && me.tileGrid[x,y]!=letter)
+		{
+			console.log("CONFLICT: " + "X: " + x, + "Y: " + y);
+			return true;
+		}
+		return false;
+	},
 
 	addTile: function(x, y){
 	 
