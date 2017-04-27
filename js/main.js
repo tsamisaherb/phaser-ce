@@ -182,22 +182,22 @@ var Main = function(game){
 				//if you arent going down then start far enough left to fit the word
 				if(direction!=0)
 				{
-					var startX = me.random.integerInRange(0,(me.tileGrid[0].length-word.length));
+					var startX = me.random.integerInRange(0,(me.tileGrid[0].length-word.length-1));
 				}
 				//else start anywhere
 				else
 				{
-					var startX = me.random.integerInRange(0, me.tileGrid[0].length);
+					var startX = me.random.integerInRange(0, me.tileGrid[0].length-1);
 				}
 				//if you arent right start far enough up to fit the word
 				if(direction!=2)
 				{
-					var startY = me.random.integerInRange(0,(me.tileGrid.length-word.length));
+					var startY = me.random.integerInRange(0,(me.tileGrid.length-word.length-1));
 				}
 				//else start anywhere
 				else
 				{
-					var startY = me.random.integerInRange(0, me.tileGrid.length);
+					var startY = me.random.integerInRange(0, me.tileGrid.length-1);
 				}
 				//now fill grid in direction
 				var thisWordHasConflict=false;
@@ -243,7 +243,7 @@ var Main = function(game){
 
 	addWordToTileGrid: function(word, direction, startX, startY)
 	{
-		console.log("ADDING WORD: " + word);
+		console.log("ADDING WORD: " + word + " " + startX + " " +startY);
 		var me = this;
 		for(var w = 0; w<word.length; w++)
 		{
@@ -271,11 +271,23 @@ var Main = function(game){
 
 	hasConflict: function(letter, x, y)
 	{
+		// if(x>=12)
+		// {
+		// 	console.log("X: " + x + " Y: " + y);
+		// }
+		// if(y>=12)
+		// {
+		// 	console.log("X: " + x + " Y: " + y);
+		// }
 		var me = this;
+		if(letter == me.tileGrid[x][y])
+		{
+			console.log("MATCHING LETTER");
+		}
 		//console.log("TG VAL: " + me.tileGrid[x][y]);
 		if(me.tileGrid[x][y]!=0 && me.tileGrid[x][y]!=letter)
 		{
-			console.log("CONFLICT: " + "X: " + x + "Y: " + y);
+			//console.log("CONFLICT: " + "X: " + x + "Y: " + y);
 			return true;
 		}
 		return false;
