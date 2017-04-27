@@ -24,31 +24,36 @@ var Main = function(game){
 	    ];
 	 	
 	    me.wordsForGame = [
-	    	"bench", "three", "over", "reason", "marked"
+	    	"bench", "three", "over", "reason", "marked", "every", "excited", "suplex"
 	    ];
 
 	    //Set the width and height for the tiles
-	    me.tileWidth = 150;
-	    me.tileHeight = 150;
+	    me.tileWidth = 70;
+	    me.tileHeight = 70;
 	 
 	    //This will hold all of the tile sprites
 	    me.tiles = me.game.add.group();
 	 
+	    me.gridWidth = 12;
+	    me.gridHeight = 12;
+	 	//instead lets initialize with gridwidth and gridlength
+
 	    //Initialise tile grid, this array will hold the positions of the tiles
 	    //Create whatever shape you'd like
-	    me.tileGrid = [
-	        [null, null, null, null, null, null, null, null],
-	        [null, null, null, null, null, null, null, null],
-	        [null, null, null, null, null, null, null, null],
-	        [null, null, null, null, null, null, null, null],
-	        [null, null, null, null, null, null, null, null],
-	        [null, null, null, null, null, null, null, null],
-	       	[null, null, null, null, null, null, null, null],
-	        [null, null, null, null, null, null, null, null],
-	       	[null, null, null, null, null, null, null, null],
-	        [null, null, null, null, null, null, null, null]
-	    ];
-	 
+	    // me.tileGrid = [
+	    //     [0, 0, 0, 0, 0, 0, 0, 0],
+	    //     [0, 0, 0, 0, 0, 0, 0, 0],
+	    //     [0, 0, 0, 0, 0, 0, 0, 0],
+	    //     [0, 0, 0, 0, 0, 0, 0, 0],
+	    //     [0, 0, 0, 0, 0, 0, 0, 0],
+	    //     [0, 0, 0, 0, 0, 0, 0, 0],
+	    //    	[0, 0, 0, 0, 0, 0, 0, 0],
+	    //     [0, 0, 0, 0, 0, 0, 0, 0],
+	    //    	[0, 0, 0, 0, 0, 0, 0, 0],
+	    //     [0, 0, 0, 0, 0, 0, 0, 0]
+	    // ];
+	    me.tileGrid=[];
+	 	me.initTileGridArray();
 	    //Keep a reference to the total grid width and height
 	    me.boardWidth = me.tileGrid[0].length * me.tileWidth;
 	    me.boardHeight = me.tileGrid.length  * me.tileHeight;
@@ -124,27 +129,40 @@ var Main = function(game){
 	 
 	},
 
-	initTiles: function(){
+	// initTiles: function(){
 	 
-	    var me = this;
+	//     var me = this;
 	 
-	    //Loop through each column in the grid
-	    for(var i = 0; i < me.tileGrid.length; i++){
+	//     //Loop through each column in the grid
+	//     for(var i = 0; i < me.tileGrid.length; i++){
+	//  		me.tileGrid[i]=[];
+	//         //Loop through each position in a specific column, starting from the top
+	//         for(var j = 0; j < me.tileGrid.length; j++){
 	 
+	//             //Add the tile to the game at this grid position
+	//             var tile = me.addTile(i, j);
+	 
+	//             //Keep a track of the tiles position in our tileGrid
+	//             me.tileGrid[i][j] = tile;
+	 
+	//         }
+	//     }
+	 
+	// },
+	initTileGridArray: function()
+	{
+		var me = this;
+		   //Loop through each column in the grid
+	    for(var i = 0; i < me.gridHeight; i++){
+	 		me.tileGrid[i] = [];
+
 	        //Loop through each position in a specific column, starting from the top
-	        for(var j = 0; j < me.tileGrid.length; j++){
+	        for(var j = 0; j < me.gridWidth; j++){
 	 
-	            //Add the tile to the game at this grid position
-	            var tile = me.addTile(i, j);
-	 
-	            //Keep a track of the tiles position in our tileGrid
-	            me.tileGrid[i][j] = tile;
-	 
+	           me.tileGrid[i][j]=0;
 	        }
 	    }
-	 
 	},
-
 	initWordGrid: function()
 	{
 		//chose the first word
@@ -154,6 +172,7 @@ var Main = function(game){
 		while(i < me.wordsForGame.length && counter<2500)
 		{
 			var word = me.wordsForGame[i];
+			
 			var success=false;
 			while(!success && counter < 2500)
 			{
@@ -217,11 +236,12 @@ var Main = function(game){
 					counter++;
 				}
 			}
+			me.addWordToTileGrid(word,direction,startX,startY);
 
 		}
 	},
 
-	addWordToTileGrid: function(word, direction, x, y)
+	addWordToTileGrid: function(word, direction, startX, startY)
 	{
 		console.log("ADDING WORD: " + word);
 		var me = this;
@@ -244,27 +264,29 @@ var Main = function(game){
 				posX=startX+w;
 				posY=startY+w;
 			}
-			me.tileGrid[x,y] = word[w];
+			me.tileGrid[posX][posY] = word[w];
+			me.addTile(posX,posY,word[w]);
 		}
 	},
 
 	hasConflict: function(letter, x, y)
 	{
 		var me = this;
-		if(me.tileGrid[x,y]!=null && me.tileGrid[x,y]!=letter)
+		//console.log("TG VAL: " + me.tileGrid[x][y]);
+		if(me.tileGrid[x][y]!=0 && me.tileGrid[x][y]!=letter)
 		{
-			console.log("CONFLICT: " + "X: " + x, + "Y: " + y);
+			console.log("CONFLICT: " + "X: " + x + "Y: " + y);
 			return true;
 		}
 		return false;
 	},
 
-	addTile: function(x, y){
+	addTile: function(x, y, letter){
 	 
 	    var me = this;
 	 
 	    //Choose a random tile to add
-	    var tileLetter = me.tileLetters[me.random.integerInRange(0, me.tileLetters.length - 1)];
+	    var tileLetter = letter;//me.tileLetters[me.random.integerInRange(0, me.tileLetters.length - 1)];
 	    var tileColor = me.tileColors[me.random.integerInRange(0, me.tileColors.length - 1)];
 	    var tileToAdd = me.createTile(tileLetter, tileColor);   
 	 
