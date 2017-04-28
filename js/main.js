@@ -26,7 +26,9 @@ var Main = function(game){
 	    me.wordsForGame = [
 	    	"bench", "three", "over", "reason", "marked", "every", "excited", "suplex"
 	    ];
-
+	    // me.wordsForGame = [
+	    // "rainbows", "panda", "unicorn", "huggers", "choice", "blanket", "city", "flowing"
+	    // ];
 	    //Set the width and height for the tiles
 	    me.tileWidth = 70;
 	    me.tileHeight = 70;
@@ -39,19 +41,6 @@ var Main = function(game){
 	 	//instead lets initialize with gridwidth and gridlength
 
 	    //Initialise tile grid, this array will hold the positions of the tiles
-	    //Create whatever shape you'd like
-	    // me.tileGrid = [
-	    //     [0, 0, 0, 0, 0, 0, 0, 0],
-	    //     [0, 0, 0, 0, 0, 0, 0, 0],
-	    //     [0, 0, 0, 0, 0, 0, 0, 0],
-	    //     [0, 0, 0, 0, 0, 0, 0, 0],
-	    //     [0, 0, 0, 0, 0, 0, 0, 0],
-	    //     [0, 0, 0, 0, 0, 0, 0, 0],
-	    //    	[0, 0, 0, 0, 0, 0, 0, 0],
-	    //     [0, 0, 0, 0, 0, 0, 0, 0],
-	    //    	[0, 0, 0, 0, 0, 0, 0, 0],
-	    //     [0, 0, 0, 0, 0, 0, 0, 0]
-	    // ];
 	    me.tileGrid=[];
 	 	me.initTileGridArray();
 	    //Keep a reference to the total grid width and height
@@ -163,6 +152,7 @@ var Main = function(game){
 	        }
 	    }
 	},
+
 	initWordGrid: function()
 	{
 		//chose the first word
@@ -176,95 +166,99 @@ var Main = function(game){
 			var success=false;
 			while(!success && counter < 2500)
 			{
-
+				var startX;
+				var startY;
+				var direction
 				//if you arent going down then start far enough left to fit the word
 				//here we want to force some overlaps if i!=0
 				//so search the grid for an overlapping letter, then see if we have space to put it in and if we dont then choose randomly
 				//CHOOSING FOR OVERLAP
 
-				//go through each letter to look for an overlap, then choose a direction, reverse engineer the start location, see if it fits, check for conflict
-				//while(!success)
-				//{
-					for(var a = 0; a<word.length; a++)
+			//go through each letter to look for an overlap, then choose a direction, reverse engineer the start location, check for conflict and add it
+				for(var a = 0; a<word.length; a++)
+				{
+					if(success)
 					{
-						for(var b=0; b<me.tileGrid.length; b++)
+						break;
+					}
+					for(var b=0; b<me.tileGrid.length; b++)
+					{
+						if(success)
 						{
-							for(var c=0; c<me.tileGrid[b].length; c++)
+							break;
+						}	
+						for(var c=0; c<me.tileGrid[b].length; c++)
+						{
+							if(success)
 							{
-								if(word[a] == me.tileGrid[b][c])
+								break;
+							}			
+							if(word[a] == me.tileGrid[b][c])
+							{
+								//try to fit at direction 1, then 0, then 2
+								for(var d = 0; d<3; d++)
 								{
-									console.log("HAS OVERLAPPING LETTER: " + word[a]);
-									//try to fit at direction 1, then 0, then 2
-
+									var startLoc = me.startPointFromOverlapPoint(a,d,b,c);
+									startX = startLoc[0];
+									startY = startLoc[1];
+									console.log("SL X: " + startLoc[0]);
+									console.log("SL Y: " + startLoc[1]);
+									direction = d;
+									if(me.doesWordFitInDirection(word,direction,startX,startY))
+									{
+										console.log("found overlap fit " + word + " X: " + startX +" Y: " + startY);
+										success=true;
+										break;
+									}
 								}
 							}
 						}
 					}
-				//	success=true;
-				//}
+				}
 				//CHOOSING RANDOMLY
 				//0 = down, 1 = diagonal, 2= right
-				var direction = me.random.integerInRange(0,2);
-				//choose starting location randomly. see if any tiles conflict
-				if(direction!=0)
+				if(!success)
 				{
-					var startX = me.random.integerInRange(0,(me.tileGrid[0].length-word.length-1));
-				}
-				//else start anywhere
-				else
-				{
-					var startX = me.random.integerInRange(0, me.tileGrid[0].length-1);
-				}
-				//if you arent right start far enough up to fit the word
-				if(direction!=2)
-				{
-					var startY = me.random.integerInRange(0,(me.tileGrid.length-word.length-1));
-				}
-				//else start anywhere
-				else
-				{
-					var startY = me.random.integerInRange(0, me.tileGrid.length-1);
-				}
-				//now fill grid in direction
-				var thisWordHasConflict=false;
-				for(var w = 0; w<word.length; w++)
-				{
-					var posX = startX;
-					var posY = startY;
-					if(direction==0)
-					{
-						posX = startX;
-						posY = startY+w;
-					}
-					if(direction==1)
-					{
-						posX = startX+w;
-						posY = startY+w;
-					}
-					if(direction==2)
-					{
-						posX=startX+w;
-						posY=startY;
-					}
-					if(me.hasConflict(word[w],posX,posY))
-					{
-						thisWordHasConflict=true;
-					}
-				}
-				if(!thisWordHasConflict)
-				{
-					success=true;
-					i++;
-					//add word to tile grid
-				}
-				else
-				{
-					counter++;
-					console.log("Counter: " + counter);
+					console.log("COULD NOT FIND OVERLAP FOR: " + word);
 
+					direction = me.random.integerInRange(0,2);
+					//choose starting location randomly. see if any tiles conflict
+					if(direction!=0)
+					{
+						startX = me.random.integerInRange(0,(me.tileGrid[0].length-word.length-1));
+					}
+					//else start anywhere on X
+					else
+					{
+						startX = me.random.integerInRange(0, me.tileGrid[0].length-1);
+					}
+					//if you arent right start far enough up to fit the word
+					if(direction!=2)
+					{
+						startY = me.random.integerInRange(0,(me.tileGrid.length-word.length-1));
+					}
+					//else start anywhere on Y
+					else
+					{
+						startY = me.random.integerInRange(0, me.tileGrid.length-1);
+					}
+					
+					if(me.doesWordFitInDirection(word,direction,startX,startY))
+					{
+						success=true;
+					}
+					else
+					{
+						counter++;
+					}
 				}
 			}
 			//we found a word that fits in a certain place in the grid
+			if(!success)
+			{
+				console.log("no successful fit");
+			}
+			i++;
 			me.addWordToTileGrid(word,direction,startX,startY);
 			//then the next thing we should do is find a word with an overlapping letter and see if it will fit anywhere
 
@@ -272,10 +266,59 @@ var Main = function(game){
 		}
 	},
 
-	fitWordInDirecion: function(word, direction, startX, starY)
+	startPointFromOverlapPoint: function(pointInWord, direction, overlapX, overlapY)
 	{
+		var startX;
+		var startY;
+		if(direction == 0)
+		{
+			startX = overlapX;
+			startY = overlapY - pointInWord;
+		}
+		if(direction == 1)
+		{
+			startX = overlapX - pointInWord;
+			startY = overlapY - pointInWord;
+		}
+		if(direction == 2)
+		{
+			startX = overlapX - pointInWord;
+			startY = overlapY;
+		}
+		var arr = new Array(startX, startY);
+		return arr;
 
-	}
+	},
+
+	doesWordFitInDirection: function(word, direction, startX, startY)
+	{
+		var me = this;
+		for(var w = 0; w<word.length; w++)
+		{
+			var posX = startX;
+			var posY = startY;
+			if(direction==0)
+			{
+				posX = startX;
+				posY = startY+w;
+			}
+			if(direction==1)
+			{
+				posX = startX+w;
+				posY = startY+w;
+			}
+			if(direction==2)
+			{
+				posX=startX+w;
+				posY=startY;
+			}
+			if(me.hasConflict(word[w],posX,posY))
+			{
+				return false;
+			}
+		}
+		return true;
+	},
 
 	addWordToTileGrid: function(word, direction, startX, startY)
 	{
@@ -308,11 +351,21 @@ var Main = function(game){
 	hasConflict: function(letter, x, y)
 	{
 		var me = this;
-		if(letter == me.tileGrid[x][y])
+		if(x>=me.tileGrid.length || x<0)
 		{
-			//console.log("MATCHING LETTER");
+			console.log("OFF GRID X");
+			return true;
 		}
-		//console.log("TG VAL: " + me.tileGrid[x][y]);
+		if(y>=me.tileGrid[0].length || y<0)
+		{
+			console.log("OFF GRID Y");
+			return true;
+		}
+
+		// if(letter == me.tileGrid[x][y])
+		// {
+		// 	//console.log("MATCHING LETTER");
+		// }
 		if(me.tileGrid[x][y]!=0 && me.tileGrid[x][y]!=letter)
 		{
 			//console.log("CONFLICT: " + "X: " + x + "Y: " + y);
