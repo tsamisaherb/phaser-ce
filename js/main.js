@@ -218,7 +218,7 @@ var Main = function(game){
 					if(direction==2)
 					{
 						posX=startX+w;
-						posY=startY+w;
+						posY=startY;
 					}
 					if(me.hasConflict(word[w],posX,posY))
 					{
@@ -236,8 +236,10 @@ var Main = function(game){
 					counter++;
 				}
 			}
+			//we found a word that fits in a certain place in the grid
 			me.addWordToTileGrid(word,direction,startX,startY);
-
+			//then the next thing we should do is fine a word with an overlapping letter and see if it will fit anywhere
+			//so choose a word, find overlapping possibilities based on the location of the overlapping tile using both directions
 		}
 	},
 
@@ -262,7 +264,7 @@ var Main = function(game){
 			if(direction==2)
 			{
 				posX=startX+w;
-				posY=startY+w;
+				posY=startY;
 			}
 			me.tileGrid[posX][posY] = word[w];
 			me.addTile(posX,posY,word[w]);
@@ -271,14 +273,6 @@ var Main = function(game){
 
 	hasConflict: function(letter, x, y)
 	{
-		// if(x>=12)
-		// {
-		// 	console.log("X: " + x + " Y: " + y);
-		// }
-		// if(y>=12)
-		// {
-		// 	console.log("X: " + x + " Y: " + y);
-		// }
 		var me = this;
 		if(letter == me.tileGrid[x][y])
 		{
