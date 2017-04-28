@@ -152,7 +152,8 @@ var Main = function(game){
 	        }
 	    }
 	},
-
+	
+	//add something here so that when it fails overlap, then fails regular fit, it tries random fit again instead of going back to overlap
 	initWordGrid: function()
 	{
 		//chose the first word
