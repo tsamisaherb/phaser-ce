@@ -176,10 +176,36 @@ var Main = function(game){
 			var success=false;
 			while(!success && counter < 2500)
 			{
+
+				//if you arent going down then start far enough left to fit the word
+				//here we want to force some overlaps if i!=0
+				//so search the grid for an overlapping letter, then see if we have space to put it in and if we dont then choose randomly
+				//CHOOSING FOR OVERLAP
+
+				//go through each letter to look for an overlap, then choose a direction, reverse engineer the start location, see if it fits, check for conflict
+				//while(!success)
+				//{
+					for(var a = 0; a<word.length; a++)
+					{
+						for(var b=0; b<me.tileGrid.length; b++)
+						{
+							for(var c=0; c<me.tileGrid[b].length; c++)
+							{
+								if(word[a] == me.tileGrid[b][c])
+								{
+									console.log("HAS OVERLAPPING LETTER: " + word[a]);
+									//try to fit at direction 1, then 0, then 2
+
+								}
+							}
+						}
+					}
+				//	success=true;
+				//}
+				//CHOOSING RANDOMLY
 				//0 = down, 1 = diagonal, 2= right
 				var direction = me.random.integerInRange(0,2);
 				//choose starting location randomly. see if any tiles conflict
-				//if you arent going down then start far enough left to fit the word
 				if(direction!=0)
 				{
 					var startX = me.random.integerInRange(0,(me.tileGrid[0].length-word.length-1));
@@ -234,14 +260,22 @@ var Main = function(game){
 				else
 				{
 					counter++;
+					console.log("Counter: " + counter);
+
 				}
 			}
 			//we found a word that fits in a certain place in the grid
 			me.addWordToTileGrid(word,direction,startX,startY);
-			//then the next thing we should do is fine a word with an overlapping letter and see if it will fit anywhere
+			//then the next thing we should do is find a word with an overlapping letter and see if it will fit anywhere
+
 			//so choose a word, find overlapping possibilities based on the location of the overlapping tile using both directions
 		}
 	},
+
+	fitWordInDirecion: function(word, direction, startX, starY)
+	{
+
+	}
 
 	addWordToTileGrid: function(word, direction, startX, startY)
 	{
@@ -276,7 +310,7 @@ var Main = function(game){
 		var me = this;
 		if(letter == me.tileGrid[x][y])
 		{
-			console.log("MATCHING LETTER");
+			//console.log("MATCHING LETTER");
 		}
 		//console.log("TG VAL: " + me.tileGrid[x][y]);
 		if(me.tileGrid[x][y]!=0 && me.tileGrid[x][y]!=letter)
