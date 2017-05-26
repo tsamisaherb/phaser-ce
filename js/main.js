@@ -69,7 +69,7 @@ topBuffer = (game.height - boardHeight) / 2;
 
 //Set up some initial tiles and the score label
 initWordGrid();
-	
+addRestOfLetters();	
 //on click down
 game.input.onDown.add(function(){onClickDown();}, this);
 //on click up
@@ -354,6 +354,29 @@ function createTile(letter, color){
     return tile;
  
 }	
+
+function addRestOfLetters()
+{
+	//Loop through each column in the grid
+    for(var i = 0; i < gridHeight; i++){
+ 		
+
+        //Loop through each position in a specific column, starting from the top
+        for(var j = 0; j < gridWidth; j++){
+ 
+           if(tileGrid[i][j] == 0)
+           {
+           	addRandomLetterAtPosition(i,j);
+           }
+        }
+    }
+}
+
+function addRandomLetterAtPosition(x,y)
+{
+	var letter = tileLetters[game.rnd.integerInRange(0, tileGrid.length-1)];
+	addTile(x,y,letter);
+}
 
 function update() {
 
