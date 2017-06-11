@@ -151,12 +151,12 @@ function initWordGrid()
 								var startLoc = startPointFromOverlapPoint(a,d,b,c);
 								startX = startLoc[0];
 								startY = startLoc[1];
-								console.log("SL X: " + startLoc[0]);
-								console.log("SL Y: " + startLoc[1]);
+								//console.log("SL X: " + startLoc[0]);
+								//console.log("SL Y: " + startLoc[1]);
 								direction = d;
 								if(doesWordFitInDirection(word,direction,startX,startY))
 								{
-									console.log("found overlap fit " + word + " X: " + startX +" Y: " + startY);
+									//console.log("found overlap fit " + word + " X: " + startX +" Y: " + startY);
 									success=true;
 									break;
 								}
@@ -169,7 +169,7 @@ function initWordGrid()
 			//0 = down, 1 = diagonal, 2= right
 			if(!success)
 			{
-				console.log("COULD NOT FIND OVERLAP FOR: " + word);
+				//console.log("COULD NOT FIND OVERLAP FOR: " + word);
 
 				direction = game.rnd.integerInRange(0,2);
 				//choose starting location randomly. see if any tiles conflict
@@ -205,7 +205,7 @@ function initWordGrid()
 		}
 		if(!success)
 		{
-			console.log("no successful fit");
+			//console.log("no successful fit");
 		}
 		i++;
 		addWordToTileGrid(word,direction,startX,startY);
@@ -267,7 +267,7 @@ function doesWordFitInDirection(word, direction, startX, startY)
 //add the word
 function addWordToTileGrid(word, direction, startX, startY)
 {
-	console.log("ADDING WORD: " + word + " " + startX + " " +startY);
+	//console.log("ADDING WORD: " + word + " " + startX + " " +startY);
 	for(var w = 0; w<word.length; w++)
 	{
 		var posX = startX;
@@ -296,12 +296,12 @@ function hasConflict(letter, x, y)
 {
 	if(x>=tileGrid.length || x<0)
 	{
-		console.log("OFF GRID X");
+		//console.log("OFF GRID X");
 		return true;
 	}
 	if(y>=tileGrid[0].length || y<0)
 	{
-		console.log("OFF GRID Y");
+		//console.log("OFF GRID Y");
 		return true;
 	}
 
@@ -320,7 +320,7 @@ function addTile(x, y, letter){
     var tileLetter = letter;//me.tileLetters[me.random.integerInRange(0, me.tileLetters.length - 1)];
     var tileColor = tileColors[game.rnd.integerInRange(0, tileColors.length - 1)];
     var tileToAdd = createTile(tileLetter, tileColor);   
- 	console.log(tileToAdd.ctx.fillStyle);
+ 	//console.log(tileToAdd.ctx.fillStyle);
     //Add the tile at the correct x position, but add it to the top of the game (so we can slide it in)
     var tile = tiles.create((x * tileWidth) + tileWidth / 2, (y*tileHeight)+tileHeight/2, tileToAdd);
  	
@@ -380,7 +380,7 @@ function addRandomLetterAtPosition(x,y)
 
 function update() {
 
-if(guessing){
+	if(guessing){
 
     //Get the location of where the pointer is currently
     var hoverX = game.input.x;
@@ -395,8 +395,8 @@ if(guessing){
 
         //Grab the tile being hovered over
         var hoverTile = tileGrid[hoverPosX][hoverPosY];
-        console.log("X" + hoverPosX);
-        console.log("Y" + hoverPosY);
+        //console.log("X" + hoverPosX);
+        //console.log("Y" + hoverPosY);
         //Figure out the bounds of the tile
         var tileLeftPosition = leftBuffer + (hoverPosX * tileWidth);
         var tileRightPosition = leftBuffer + (hoverPosX * tileWidth) + tileWidth;
@@ -411,7 +411,7 @@ if(guessing){
             //Set the tile to be active
             hoverTile.isActive = true;
 
-            console.log(hoverTile.tileLetter);
+            //console.log(hoverTile.tileLetter);
 
             //Push this tile into the current word that is being built
             currentWord.push(hoverTile);
@@ -437,7 +437,7 @@ else {
 
 			if(correctWords.indexOf(guessedWord) == -1){
 			 
-			    console.log("correct!");
+			    //console.log("correct!");
 			 
 			    scoreBuffer += 10 * guessedWord.length;
 			 
