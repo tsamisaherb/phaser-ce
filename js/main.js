@@ -1,4 +1,4 @@
-var game = new Phaser.Game(600, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(700, 700, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
 //Declare assets that will be used as tiles
 tileLetters = [
@@ -18,6 +18,8 @@ tileColors = [
 wordsForGame = [
 	"bench", "three", "over", "reason", "marked", "every", "excited", "suplex"
 ];
+
+var wordTexts;
 
 var gridWidth = 12;
 var gridHeight = 12;
@@ -41,10 +43,12 @@ var selectBuffer;
 var score = 0;
 var scoreBuffer = 0;
 var tiles;
+
 function preload()
 {
 
 }
+
 function create() 
 {
 
@@ -52,11 +56,11 @@ function create()
 	game.stage.backgroundColor = "34495f";
 	//This will hold all of the tile sprites
 	tiles = game.add.group();
-
-		//instead lets initialize with gridwidth and gridlength
+	wordTexts = game.add.group();
+	//instead lets initialize with gridwidth and gridlength
 
 	//Initialise tile grid, this array will hold the positions of the tiles
-
+	initWordTexts();
 	initTileGridArray();
 	//Keep a reference to the total grid width and height
 	boardWidth = tileGrid[0].length * tileWidth;
@@ -84,15 +88,17 @@ function create()
 // 	console.log("CLICK DOWN");
 // }
 
-function onClickUp()
+function initWordTexts()
 {
-	console.log("Click Up");
+	//console.log(wordsForGame.length);
+	for(var i=0; i<wordsForGame.length; i++)
+	{
+		var textStyle = { 
+			font: "24px Arial", fill: "#ffffff", wordWrap: true, align: "center"};
+		var text = game.add.text(game.width - 90, 100+(i*50), wordsForGame[i], textStyle);
+	}
 }
 
-function endedSelection()
-{
-
-}
 
 function initTileGridArray()
 {
@@ -108,11 +114,13 @@ function initTileGridArray()
     }
 }
 
+
+
 //add something here so that when it fails overlap, then fails regular fit, it tries random fit again instead of going back to overlap
 function initWordGrid()
 {
 	//chose the first word
-	tileWidth = game.width/gridWidth;
+	tileWidth = (game.width - 100)/gridWidth;
 	tileHeight = game.height/gridHeight;
 
 	var i =0;
@@ -415,4 +423,18 @@ function tileUpdate(sprite)
 		console.log(sprite.tileLetter);
 		selectTile(sprite);
 	}
+}
+
+
+function onClickUp()
+{
+	console.log("Click Up");
+	endedSelection();
+}
+
+function endedSelection()
+{
+	//unselect letters
+	//check against words in list
+	//clear current word array
 }
