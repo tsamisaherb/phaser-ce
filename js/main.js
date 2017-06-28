@@ -48,46 +48,50 @@ function preload()
 function create() 
 {
 
-//Set the background colour of the game
-game.stage.backgroundColor = "34495f";
-//This will hold all of the tile sprites
-tiles = game.add.group();
+	//Set the background colour of the game
+	game.stage.backgroundColor = "34495f";
+	//This will hold all of the tile sprites
+	tiles = game.add.group();
 
-	//instead lets initialize with gridwidth and gridlength
+		//instead lets initialize with gridwidth and gridlength
 
-//Initialise tile grid, this array will hold the positions of the tiles
+	//Initialise tile grid, this array will hold the positions of the tiles
 
-initTileGridArray();
-//Keep a reference to the total grid width and height
-boardWidth = tileGrid[0].length * tileWidth;
-boardHeight = tileGrid.length  * tileHeight;
+	initTileGridArray();
+	//Keep a reference to the total grid width and height
+	boardWidth = tileGrid[0].length * tileWidth;
+	boardHeight = tileGrid.length  * tileHeight;
 
-//We want to keep a buffer on the left and top so that the grid
-//can be centered
-leftBuffer = (game.width - boardWidth) / 2;
-topBuffer = (game.height - boardHeight) / 2;
+	//We want to keep a buffer on the left and top so that the grid
+	//can be centered
+	leftBuffer = (game.width - boardWidth) / 2;
+	topBuffer = (game.height - boardHeight) / 2;
 
-//Set up some initial tiles and the score label
-initWordGrid();
-addRestOfLetters();	
-//on click down
-game.input.onDown.add(function(){onClickDown();}, this);
-//on click up
-game.input.onUp.add(function(){onClickUp();}, this);
- 
-//A buffer for how much of the tile activates a select
-selectBuffer = tileWidth / 8;
+	//Set up some initial tiles and the score label
+	initWordGrid();
+	addRestOfLetters();	
+	// //on click down
+	// game.input.onDown.add(function(){onClickDown();}, this);
+	// //on click up
+	// game.input.onUp.add(function(){onClickUp();}, this);
+	 
+	//A buffer for how much of the tile activates a select
+	selectBuffer = tileWidth / 8;
 }
 
-
-function onClickDown()
-{
-	console.log("CLICKED");
-}
+// function onClickDown()
+// {
+// 	console.log("CLICK DOWN");
+// }
 
 function onClickUp()
 {
-	console.log("CLICK UP");
+	console.log("Click Up");
+}
+
+function endedSelection()
+{
+
 }
 
 function initTileGridArray()
@@ -323,7 +327,7 @@ function addTile(x, y, letter){
  	//console.log(tileToAdd.ctx.fillStyle);
     //Add the tile at the correct x position, but add it to the top of the game (so we can slide it in)
     var tile = tiles.create((x * tileWidth) + tileWidth / 2, (y*tileHeight)+tileHeight/2, tileToAdd);
- 	
+ 	tile.inputEnabled = true;
     //Animate the tile into the correct vertical position
    // game.add.tween(tile).to({y:topBuffer + (y*tileHeight+(tileHeight/2))}, 500, Phaser.Easing.Linear.In, true)
  
@@ -332,9 +336,14 @@ function addTile(x, y, letter){
  
     //Keep track of the type of tile that was added
     tile.tileLetter = tileLetter;
- 
+ 	tile.events.onInputDown.add(listener, this);
     return tile;
  
+}
+
+function listener(sprite, pointer)
+{
+	console.log("This Letter is: " + sprite.tileLetter)
 }
 
 function createTile(letter, color){
@@ -378,83 +387,32 @@ function addRandomLetterAtPosition(x,y)
 	addTile(x,y,letter);
 }
 
-function update() {
+function update() 
+{
 
-	if(guessing){
+	for(var i = 0; i < gridHeight; i++)
+	{
+ 		//Loop through each position in a specific column, starting from the top
+        for(var j = 0; j < gridWidth; j++){
 
-    //Get the location of where the pointer is currently
-    var hoverX = game.input.x;
-    var hoverY = game.input.y;
-
-    //Figure out what position on the grid that translates to
-    var hoverPosX = Math.floor((hoverX - leftBuffer)/tileWidth);
-    var hoverPosY = Math.floor((hoverY - topBuffer)/tileHeight);
-
-    //Check that we are within the game bounds
-    if(hoverPosX >= 0 && hoverPosX < tileGrid[0].length && hoverPosY >= 0 && hoverPosY < tileGrid.length){
-
-        //Grab the tile being hovered over
-        var hoverTile = tileGrid[hoverPosX][hoverPosY];
-        //console.log("X" + hoverPosX);
-        //console.log("Y" + hoverPosY);
-        //Figure out the bounds of the tile
-        var tileLeftPosition = leftBuffer + (hoverPosX * tileWidth);
-        var tileRightPosition = leftBuffer + (hoverPosX * tileWidth) + tileWidth;
-        var tileTopPosition = topBuffer + (hoverPosY * tileHeight);
-        var tileBottomPosition = topBuffer + (hoverPosY * tileHeight) + tileHeight;
-
-        //If the player is hovering over the tile set it to be active. The buffer is provided here so that the tile is only selected
-        //if the player is hovering near the center of the tile
-        if(!hoverTile.isActive && hoverX > tileLeftPosition + me.selectBuffer && hoverX < tileRightPosition - selectBuffer 
-            && hoverY > tileTopPosition + selectBuffer && hoverY < tileBottomPosition - selectBuffer){
-				
-            //Set the tile to be active
-            hoverTile.isActive = true;
-
-            //console.log(hoverTile.tileLetter);
-
-            //Push this tile into the current word that is being built
-            currentWord.push(hoverTile);
+           tileUpdate(tiles.getAt([j*gridWidth+i]));
         }
-
     }
-
 }
-else {
 
-    if(currentWord.length > 0){
+function selectTile(sprite)
+{
+	//sprite.tint = '#0000ff'
+	//add to working string
 
-        var guessedWord = '';
+	//do a visual reaction
+}
 
-        //Build a string out of all of the active tiles
-        for(var i = 0; i < currentWord.length; i++){
-            guessedWord += currentWord[i].tileLetter;
-            currentWord[i].isActive = false;
-        }
-
-        //Check to see if this word exists in our dictionary
-        if(game.cache.getText('dictionary').indexOf(' ' + guessedWord + ' ') > -1 && guessedWord.length > 1){
-
-			if(correctWords.indexOf(guessedWord) == -1){
-			 
-			    //console.log("correct!");
-			 
-			    scoreBuffer += 10 * guessedWord.length;
-			 
-			    //Add this word to the already guessed word
-			    correctWords.push(guessedWord);
-			 
-				}
-
-            } 
-
-        } 
-        else {
-            //console.log("incorrect!");
-        }
-
-        //Reset the current word
-        currentWord = [];
-
-    }
+function tileUpdate(sprite)
+{
+	if (game.input.activePointer.isDown && sprite.input.checkPointerOver(game.input.activePointer)) 
+	{
+		console.log(sprite.tileLetter);
+		selectTile(sprite);
+	}
 }
