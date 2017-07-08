@@ -44,8 +44,10 @@ var score = 0;
 var scoreBuffer = 0;
 var tiles;
 
+var lastSelectedTile;
 function preload()
 {
+	game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
 }
 
@@ -300,7 +302,7 @@ function addWordToTileGrid(word, direction, startX, startY)
 			posY=startY;
 		}
 		tileGrid[posX][posY] = word[w];
-		addTile(posX,posY,word[w]);
+		//addTile(posX,posY,word[w]);
 	}
 }
 //check for a conflict of a certain letter in a certain point
@@ -335,6 +337,7 @@ function addTile(x, y, letter){
  	//console.log(tileToAdd.ctx.fillStyle);
     //Add the tile at the correct x position, but add it to the top of the game (so we can slide it in)
     var tile = tiles.create((x * tileWidth) + tileWidth / 2, (y*tileHeight)+tileHeight/2, tileToAdd);
+
  	tile.inputEnabled = true;
     //Animate the tile into the correct vertical position
    // game.add.tween(tile).to({y:topBuffer + (y*tileHeight+(tileHeight/2))}, 500, Phaser.Easing.Linear.In, true)
@@ -385,6 +388,10 @@ function addRestOfLetters()
            {
            	addRandomLetterAtPosition(i,j);
            }
+           else
+           {
+           	addTile(i,j,tileGrid[i][j]);
+           }
         }
     }
 }
@@ -394,22 +401,45 @@ function addRandomLetterAtPosition(x,y)
 	var letter = tileLetters[game.rnd.integerInRange(0, tileGrid.length-1)];
 	addTile(x,y,letter);
 }
-
+var doOnce = false;
 function update() 
 {
-
+	//if(!doOnce){
 	for(var i = 0; i < gridHeight; i++)
 	{
  		//Loop through each position in a specific column, starting from the top
         for(var j = 0; j < gridWidth; j++){
 
-           tileUpdate(tiles.getAt([j*gridWidth+i]));
+           tileUpdate(tileObjFromGrid(i,j));
         }
     }
+//} doOnce=true;
 }
 
+function tileNumFromGrid(posX, posY)
+{
+	return posY*gridWidth+posX;
+}
+function tileObjFromGrid(posX,posY)
+{
+	return tiles.getAt(tileNumFromGrid(posX,posY));
+}
 function selectTile(sprite)
 {
+	//check if its different from last selected tile, if not, return
+	if(sprite == lastSelectedTile)
+	{
+		console.log("Chose Last Tile Again");
+		
+	}
+	else
+	{
+		lastSelectedTile = sprite;
+		sprite.tint = '#0000ff';
+		console.log('Selected tile: ' + sprite.tileLetter);
+	}
+	//compare it to the string
+
 	//sprite.tint = '#0000ff'
 	//add to working string
 
@@ -420,7 +450,7 @@ function tileUpdate(sprite)
 {
 	if (game.input.activePointer.isDown && sprite.input.checkPointerOver(game.input.activePointer)) 
 	{
-		console.log(sprite.tileLetter);
+		//console.log(sprite.tileLetter);
 		selectTile(sprite);
 	}
 }
