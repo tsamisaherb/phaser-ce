@@ -5,6 +5,7 @@ var gameProperties = {
     paddleLeft_x: 40,
     paddleRight_x: 600,
     paddleVelocity: 600,
+    paddleMaxAcellerationFrames: 10,
     paddleSegmentsMax: 4,
     paddleSegmentHeight: 4,
     paddleSegmentAngle: 15,
@@ -74,6 +75,7 @@ var mainState = function(game)
     this.paddleLeft_down;
     this.paddleRight_up;
     this.paddleRight_down;
+    this.paddleAccelerationFrames;
 
     this.missedSide;
 
@@ -257,21 +259,29 @@ mainState.prototype = {
             randomAngle = game.rnd.integerInRange(gameProperties.ballRandomStartingAngleLeft[0],gameProperties.ballRandomStartingAngleLeft[1]);
         }
         game.physics.arcade.velocityFromAngle(randomAngle, gameProperties.ballVelocity, this.ballSprite.body.velocity);
-        console.log(randomAngle);
+    },
+
+    calculateAcceleration: function()
+    {
+        var acceleration = Math.min(this.paddleAccelerationFrames/gameProperties.paddleMaxAcellerationFrames, 1);
+        return acceleration;
     },
 
     moveLeftPaddle: function () {
         if (this.paddleLeft_up.isDown)
         {
-            this.paddleLeftSprite.body.velocity.y = -gameProperties.paddleVelocity;
+            this.paddleAccelerationFrames++;
+            this.paddleLeftSprite.body.velocity.y = -gameProperties.paddleVelocity*this.calculateAcceleration();
         }
         else if (this.paddleLeft_down.isDown)
         {
-            this.paddleLeftSprite.body.velocity.y = gameProperties.paddleVelocity;
+            this.paddleAccelerationFrames++;
+            this.paddleLeftSprite.body.velocity.y = gameProperties.paddleVelocity*this.calculateAcceleration();
         } else {
             this.paddleLeftSprite.body.velocity.y = 0;
+            this.paddleAccelerationFrames=0;
         }
-
+        //keep it from going over the top
         if(this.paddleLeftSprite.body.y < gameProperties.paddleTopGap) {
             this.paddleLeftSprite.body.y = gameProperties.paddleTopGap;
         }
