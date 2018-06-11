@@ -12,8 +12,8 @@ var gameProperties = {
 
     ballVelocity: 350,
     ballStartDelay: 2,
-    ballRandomStartingAngleLeft: [-120, 120],
-    ballRandomStartingAngleRight: [-60, 60],
+    ballRandomStartingAngleLeft: [150, 210],
+    ballRandomStartingAngleRight: [-30, 30],
     ballVelocityIncrement: 25,
     ballReturnCount: 4,
 
@@ -250,13 +250,14 @@ mainState.prototype = {
         this.ballVelocity = gameProperties.ballVelocity;
         this.ballReturnCount = 0;
         this.ballSprite.visible = true;   
-        var randomAngle = game.rnd.pick(gameProperties.ballRandomStartingAngleRight.concat(gameProperties.ballRandomStartingAngleLeft));
+        var randomAngle = game.rnd.integerInRange(gameProperties.ballRandomStartingAngleRight[0],gameProperties.ballRandomStartingAngleRight[1]);
         if (this.missedSide == 'right') {
-            randomAngle = game.rnd.pick(gameProperties.ballRandomStartingAngleRight);
+            randomAngle = game.rnd.integerInRange(gameProperties.ballRandomStartingAngleRight[0],gameProperties.ballRandomStartingAngleRight[1]);
         } else if (this.missedSide == 'left') {
-            randomAngle = game.rnd.pick(gameProperties.ballRandomStartingAngleLeft);
+            randomAngle = game.rnd.integerInRange(gameProperties.ballRandomStartingAngleLeft[0],gameProperties.ballRandomStartingAngleLeft[1]);
         }
         game.physics.arcade.velocityFromAngle(randomAngle, gameProperties.ballVelocity, this.ballSprite.body.velocity);
+        console.log(randomAngle);
     },
 
     moveLeftPaddle: function () {

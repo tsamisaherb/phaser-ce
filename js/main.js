@@ -12,11 +12,12 @@ tileColors = [
     '#ffffff'
 ];
 
+selectedColor = '#0000ff';
 // me.wordsForGame = [
 // "rainbows", "panda", "unicorn", "huggers", "choice", "blanket", "city", "flowing"
 // ];	
 wordsForGame = [
-	"bench", "three", "over", "reason", "marked", "every", "excited", "suplex"
+	"bench", "three", "over", "reason", "marked", "every", "excited", "suplex", "computer", "email", "paintball"
 ];
 
 var wordTexts;
